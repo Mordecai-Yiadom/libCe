@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include "../libce/memtypes.h"
+
 
 int main(void)
 {
