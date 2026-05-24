@@ -7,8 +7,9 @@
 int main(void)
 {   
     array myArray = array_create(int, 10);
-
-    array_set(myArray, 0, 10);
+    
+    int myCoolNum = 10;
+    array_set(myArray, 0, myCoolNum);
     array_set(myArray, 1, 83);
     array_set(myArray, 2, 12);
     array_set(myArray, 3, 755);
