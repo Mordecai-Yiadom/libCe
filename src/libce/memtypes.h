@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
+#define LIBCE extern
+
 typedef uint8_t unsigned_byte;
 
 typedef int8_t byte;
