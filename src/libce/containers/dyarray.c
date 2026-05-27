@@ -30,7 +30,7 @@ void _dyarray_destroy(dyarray array)
     memclear(array, _dyarray_size(array));
 }
 
-void _dyarray_free(array)
+void _dyarray_free(dyarray array)
 {
     free(array);
 }
@@ -82,7 +82,6 @@ void _dyarray_pop(dyarray array, void* dest)
 
     if(_dyarray_field(array, DYARRAY_LENGTH) < 1) return;
 
-    //For now, this function uses the standard lib 'memcpy' until libCe has its own
     if(dest) 
         libce_memcpy(dest, 
             _dyarray_addr_of(array, _dyarray_field(array, DYARRAY_LENGTH) - 1), 

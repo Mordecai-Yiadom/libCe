@@ -7,7 +7,7 @@
 
 int main(void)
 {   
-    //test_dyarray();
+    test_dyarray();
     //test_array();
 }
 
