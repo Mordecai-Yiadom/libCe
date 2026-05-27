@@ -123,60 +123,188 @@ LIBCE_INTERNAL u64 _dyarray_get_field(dyarray array, _dyarray_field field);
     _dyarray_create_at(((initial_capacity > 0) ? initial_capacity : DYARRAY_DEFAULT_CAPACITY), sizeof(type), address)
 
 
+
+/*
+    Clears the memory at the given dyarray pointer.
+
+    @note
+    This function does not free the memory given.
+
+    @param
+    array the dyarray to destroy.
+*/
 #define dyarray_destroy(array) \
     _dyarray_destroy(array)
 
 
+
+/*
+    Calls 'free()' on the given dyarray pointer.
+
+    @note
+    This function does not free the memory
+
+    @param
+    array the dyarray to free.
+*/
 #define dyarray_free(array) \
     _dyarray_free(array)
 
 
+
+/*
+    Changes the value at a valid index of the given dyarray.
+
+    @param
+    array the dyarray to operate on
+
+    @param 
+    index the index to set the value into
+
+    @param
+    value the value to set on the given index
+
+    @note
+    this function will silently fail if the index >= length
+*/
 #define dyarray_set(array, index, value)          \
 {                                                 \
     typeof(value) temp_value = value;             \
     _dyarray_set(array, index, &temp_value);      \
 }
 
+/*
+    Retrieves the element at a valid index of the given dyarray.
+
+    @param
+    array the dyarray to query
+
+    @param 
+    index the index to get the element from. 
+
+    @return
+    A pointer to the value in the dyarray or NULL if the index or dyarray pointer are invalid
+
+    @note
+    this function will silently fail if the index >= length
+*/
 #define dyarray_get(array, index) \
     _dyarray_get(array, index)
 
 
+/*
+    Adds new element to the end of the dyarray given.
+
+    @param
+    array the dyarray to operate on
+
+    @param
+    value the value to add to the dyarray
+
+    @note
+    this function will silently fail if there is an issue with writing the memory.
+*/
 #define dyarray_push(array, value)                \
 {                                                 \
     typeof(value) temp_value = value;             \
     array = _dyarray_push(array, &temp_value);    \
 }
 
-#define dyarray_pop(array, value)          \
+
+/*
+    Removes the last element of the dyarray given.
+
+    @param
+    array the dyarray to operate on
+
+    @param
+    dest the places to write the popped element to. This may be NULL.
+*/
+#define dyarray_pop(array, dest)          \
 {                                           \
-    _dyarray_pop(array, value);             \
+    _dyarray_pop(array, dest);             \
 }
 
+
+/*
+    Retrieves the length of the dyarray given.
+
+    @param
+    array the dyarray to query.
+
+    @return
+    the length of the given dyarray.
+*/
 #define dyarray_length(array) \
     _dyarray_get_field(array, DYARRAY_LENGTH)
 
+/*
+    Retrieves the capacity of the dyarray given.
+
+    @param
+    array the dyarray to query.
+
+    @return
+    the capacity of the given dyarray.
+*/
 #define dyarray_capacity(array) \
     _dyarray_get_field(array, DYARRAY_CAPACITY)
 
+/*
+    Retrieves the stride of the dyarray given.
+
+    @param
+    array the dyarray to query.
+
+    @return
+    the stride of the given dyarray.
+*/
 #define dyarray_stride(array) \
     _dyarray_get_field(array, DYARRAY_STRIDE)
 
 
+/*
+    Retrieves the total size of the dyarray given. This includes the header.
+
+    @param
+    array the dyarray to operate on.
+
+    @return
+    The total size of the dyarray
+*/
+#define dyarray_size(array) \
+    _dyarray_size(array);
+
+/*
+    Resizes the given dyarray's capacity to fit its length.
+
+    @param
+    array the dyarray to operate on.
+*/
 #define dyarray_pack(array) \
     array = _dyarray_pack(array)
 
 
+/*
+    Sets the given dyarray's length to 0, while leaving the capacity intact.
+
+    @param
+    array the dyarray to operate on.
+*/
 #define dyarray_clear(array) \
     _dyarray_set_field(array, DYARRAY_LENGTH, 0)
 
 
+/*
+    Sets the given dyarray's length and capacity to 0. Resizes the 
+
+    @param
+    array the dyarray to operate on.
+*/   
 #define dyarray_reset(array)                      \
 {                                                 \
     dyarray_clear(array);                         \
     dyarray_pack(array);                          \
 }
-
-#define dyarray_size(array) \
-    _dyarray_size(array);
 
 #endif
