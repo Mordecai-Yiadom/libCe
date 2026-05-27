@@ -15,8 +15,15 @@ typedef enum _array_field
     ARRAY_STRIDE,
 }_array_field;
 
+typedef struct _array_header
+{
+    u64 length;
+    u64 stride;
+}_array_header;
 
 LIBCE_INTERNAL array _array_create(u64 length, u64 stride);
+
+LIBCE_INTERNAL array _array_create_at(u64 length, u64 stride, void* heap_address);
 
 LIBCE_INTERNAL void _array_destroy(array array);
 
@@ -34,6 +41,15 @@ LIBCE_INTERNAL void _array_set_field(array array, _array_field field, u64 value)
 LIBCE_INTERNAL u64 _array_get_field(array array, _array_field field);
 
 
+#define _arraySizeOf(stride, length) \
+    ((u64)((sizeof(_array_header) + (stride * length))))
+
+
+#define arraySizeOf(type, length) \
+    _arraySizeOf(sizeof(type), length)
+
+
+
 /*  
     Allocates a contiguous block memory for the array data and its fields.
 
@@ -48,6 +64,11 @@ LIBCE_INTERNAL u64 _array_get_field(array array, _array_field field);
 #define array_create(type, length) \
     _array_create(length, sizeof(type))
 
+
+
+
+#define array_create_at(type, length, heap_address) \
+    _array_create_at(length, sizeof(type), heap_address);
 
 /*  
     Deallocates the given array. Data may or may not be cleared.
@@ -106,7 +127,7 @@ LIBCE_INTERNAL u64 _array_get_field(array array, _array_field field);
     A pointer to the newly resized array. 
 */
 #define array_resize(array, new_size) \
-    _array_resize(array, new_size)
+    array = _array_resize(array, new_size)
 
 
 /*  
@@ -118,7 +139,7 @@ LIBCE_INTERNAL u64 _array_get_field(array array, _array_field field);
     @return
     The size of the given array. May be zero if array == NULL
 */    
-#define array_get_length(array) \
+#define array_length(array) \
     _array_get_field(array, ARRAY_LENGTH)
 
 
@@ -131,7 +152,7 @@ LIBCE_INTERNAL u64 _array_get_field(array array, _array_field field);
     @return
     The stride of the given array. May be zero if array == NULL
 */ 
-#define array_get_stride(array) \
+#define array_stride(array) \
     _array_get_field(array, ARRAY_STRIDE)
 
 #endif
