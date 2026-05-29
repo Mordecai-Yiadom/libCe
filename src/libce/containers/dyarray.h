@@ -62,7 +62,7 @@ LIBCE_INTERNAL u64 _dyarray_get_field(dyarray array, _dyarray_field field);
     ((u64)(sizeof(_dyarray_header) + (stride * capacity)))
 
 #define dyarraySizeOf(type, capacity) \
-    ((u64)(sizeof(_dyarray_header) + (sizeof(type) * capacity)))
+    _dyarraySizeOf(sizeof(type), capacity)
 
 
 /*
