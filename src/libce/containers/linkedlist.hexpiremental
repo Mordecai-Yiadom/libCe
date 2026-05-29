@@ -35,9 +35,9 @@ typedef struct _linkedlist_node_header
 
 typedef enum _linkedlist_node_field
 {
-    LINKEDLIST_PREV_INDEX = 0,
-    LINKEDLIST_NEXT_INDEX,
-    LINKEDLIST_NODE_DATA
+    LINKEDLISTNODE_PREV_INDEX = 0,
+    LINKEDLISTNODE_NEXT_INDEX,
+    LINKEDLISTNODE_DATA
 }_linkedlist_node_field;
 
 

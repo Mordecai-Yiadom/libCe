@@ -43,7 +43,7 @@ u64 _dyarray_size(dyarray array)
 void _dyarray_set(dyarray array, u64 index, const void* value)
 {
     if(!array) return;
-    if(index < _dyarray_field(array, DYARRAY_CAPACITY))
+    if(index < _dyarray_field(array, DYARRAY_LENGTH))
     {
         libce_memcpy(_dyarray_addr_of(array, index), value, _dyarray_field(array, DYARRAY_STRIDE));
     }
@@ -70,9 +70,9 @@ dyarray _dyarray_push(dyarray array, const void* value)
         array = _dyarray_resize(array, DYARRAY_DEFAULT_RESIZE_FACTOR * _dyarray_field(array, DYARRAY_CAPACITY));
     }
     
-    _dyarray_set(array, _dyarray_field(array, DYARRAY_LENGTH), value);
     _dyarray_field(array, DYARRAY_LENGTH) += 1;
-
+    _dyarray_set(array, _dyarray_field(array, DYARRAY_LENGTH) - 1, value);
+    
     return array;
 }
 
@@ -102,35 +102,32 @@ void _dyarray_clear(dyarray array)
     _dyarray_field(array, DYARRAY_LENGTH) = 0;
 }
 
-dyarray _dyarray_resize(dyarray array, u64 new_capacity)
-{
-    if(!array) return NULL;
-
-    u64 new_array_size = _dyarraySizeOf(_dyarray_field(array, DYARRAY_STRIDE), new_capacity);
-    dyarray new_array = calloc(1, new_array_size);
-
-    if(!new_array) return array;
-
-    libce_memcpy(new_array, array, _dyarraySizeOf(_dyarray_field(array, DYARRAY_STRIDE), _dyarray_field(array, DYARRAY_CAPACITY)));
-    _dyarray_field(new_array, DYARRAY_CAPACITY) = new_capacity;
-    
-    free(array);
-    return new_array;
-}
-
-
-
-
 // dyarray _dyarray_resize(dyarray array, u64 new_capacity)
 // {
 //     if(!array) return NULL;
 
-//     dyarray new_array = realloc(array, _dyarraySizeOf(_dyarray_field(array, DYARRAY_STRIDE), new_capacity));
-//     if(!new_array) return array;  
+//     u64 new_array_size = _dyarraySizeOf(_dyarray_field(array, DYARRAY_STRIDE), new_capacity);
+//     dyarray new_array = calloc(1, new_array_size);
 
-//     _dyarray_set_field(new_array, DYARRAY_CAPACITY, new_capacity);
-//     return new_array;   
+//     if(!new_array) return array;
+
+//     libce_memcpy(new_array, array, _dyarraySizeOf(_dyarray_field(array, DYARRAY_STRIDE), _dyarray_field(array, DYARRAY_CAPACITY)));
+//     _dyarray_field(new_array, DYARRAY_CAPACITY) = new_capacity;
+    
+//     free(array);
+//     return new_array;
 // }
+
+dyarray _dyarray_resize(dyarray array, u64 new_capacity)
+{
+    if(!array) return NULL;
+
+    dyarray new_array = realloc(array, _dyarraySizeOf(_dyarray_field(array, DYARRAY_STRIDE), new_capacity));
+    if(!new_array) return array;  
+
+    _dyarray_set_field(new_array, DYARRAY_CAPACITY, new_capacity);
+    return new_array;   
+}
 
 
 void _dyarray_set_field(dyarray array, _dyarray_field field, u64 value)

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "../memutil.h"
 
+#define LINKEDLIST_DEFAULT_RESIZE_FACTOR 2
+
 #define _linkedlist_field(list, field) \
     ((u64*)list)[field]
 
@@ -11,12 +13,14 @@
     (void*)(((u64)list) + sizeof(_linkedlist_header) + (index * _linkedlist_field(list, LINKEDLIST_STRIDE)))
 
 
-#define linkedlist_node_field(list, index, field) \
+#define _linkedlist_node_field(list, index, field) \
     ((u64*)_linkedlist_addr_of(list, index))[field]
 
 #define _linkedlist_is_valid_index(list, index) \
     (index != LINKEDLIST_INVALID_INDEX && index < _linkedlist_field(list, LINKEDLIST_LENGTH))
 
+#define _linkedlist_node_data_size(list) \
+    (_linkedlist_field(list, LINKEDLIST_STRIDE) - sizeof(_linkedlist_node_header))
 
 linkedlist _linkedlist_create(u64 initial_capacity, u64 stride)
 {
@@ -33,7 +37,7 @@ linkedlist _linkedlist_create_at(u64 initial_capacity, u64 stride, void* address
     _linkedlist_field(address, LINKEDLIST_TAIL_INDEX) = LINKEDLIST_INVALID_INDEX;
     _linkedlist_field(address, LINKEDLIST_LENGTH) = 0;
     _linkedlist_field(address, LINKEDLIST_CAPACITY) = initial_capacity;
-    _linkedlist_field(address, LINKEDLIST_STRIDE) = stride;
+    _linkedlist_field(address, LINKEDLIST_STRIDE) = sizeof(_linkedlist_node_header) + stride;
 
     return address;
 }
@@ -41,8 +45,9 @@ linkedlist _linkedlist_create_at(u64 initial_capacity, u64 stride, void* address
 void _linkedlist_destroy(linkedlist list)
 {
     memclear(list, 
-        _linkedlistSizeOf(_linkedlist_field(list, LINKEDLIST_STRIDE), 
-        _linkedlist_field(list, LINKEDLIST_CAPACITY)));
+        _linkedlistSizeOf(
+            _linkedlist_field(list, LINKEDLIST_STRIDE), 
+            _linkedlist_field(list, LINKEDLIST_CAPACITY)));
 }
 
 void _linkedlist_free(linkedlist list)
@@ -51,42 +56,47 @@ void _linkedlist_free(linkedlist list)
 }
 
 
-b8 _linkedlist_add(linkedlist list, const void* node)
+b8 _linkedlist_push(linkedlist list, const void* node)
 {
     if(!list) return 0;
     
     if(_linkedlist_field(list, LINKEDLIST_LENGTH) == _linkedlist_field(list, LINKEDLIST_CAPACITY))
     {
-        list = _linkedlist_resize(list, 2 * _linkedlist_field(list, LINKEDLIST_CAPACITY));
+        list = _linkedlist_resize(list, LINKEDLIST_DEFAULT_RESIZE_FACTOR * _linkedlist_field(list, LINKEDLIST_CAPACITY));
     }
-
-    _linkedlist_set(list, _linkedlist_field(list, LINKEDLIST_LENGTH), node);
+    
     _linkedlist_field(list, LINKEDLIST_LENGTH) += 1;
+    _linkedlist_set(list, _linkedlist_field(list, LINKEDLIST_LENGTH), node);
+    
+    if(_linkedlist_field(list, LINKEDLIST_HEAD_INDEX) == LINKEDLIST_INVALID_INDEX)
+    {
+        
+    }
     
     return list;
 }
 
-b8 _linkedlist_insert_at(linkedlist list, const void* node, u64 index)
-{
-    return 0;
-}
-
-
-b8 _linkedlist_set(linkedlist list, u64 index, const void* node)
-{
+b8 _linkedlist_push_at(linkedlist list, const void* node, u64 index)
+{   
     if(!list) return 0;
 
     if(!_linkedlist_is_valid_index(list, index)) return 0;
 
     
+    libce_memcpy(, node, _linkedlist_node_data_size(list));
+
+
+    return 0;
 }
 
-b8 _linkedlist_remove(linkedlist list)
+
+
+b8 _linkedlist_pop(linkedlist list)
 {
     return 0;
 }
 
-b8 _linkedlist_remove_at(linkedlist list, u64 index)
+b8 _linkedlist_pop_at(linkedlist list, u64 index)
 {
     return 0;
 }
@@ -106,6 +116,7 @@ linkedlist _linkedlist_resize(linkedlist list, u64 new_capacity)
         _linkedlist_field(list, LINKEDLIST_CAPACITY)));
     
     if(!new_list) return list;
+    
     _linkedlist_set_field(new_list, LINKEDLIST_CAPACITY, new_capacity);
     return new_list;
 }
