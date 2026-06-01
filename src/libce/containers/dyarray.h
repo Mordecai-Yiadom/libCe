@@ -20,8 +20,6 @@ typedef struct _dyarray_header
 }_dyarray_header;
 
 
-//typedef struct _dyarray_header _dyarray_header;
-
 LIBCE_INTERNAL dyarray _dyarray_create(u64 initial_capacity, u64 stride);
 
 LIBCE_INTERNAL dyarray _dyarray_create_at(u64 initial_capacity, u64 stride, void* address);

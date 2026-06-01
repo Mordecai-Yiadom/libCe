@@ -16,8 +16,8 @@ void print_dyarray(dyarray array)
 
     for(u64 i = 0; i < dyarray_length(array); i++)
     {   
-        u8* num = dyarray_get(array, i);
-        printf("dyarray[%lld]=%d\n", i, *num);
+        u64* num = dyarray_get(array, i);
+        printf("dyarray[%lld]=%lld\n", i, *num);
     }
     
     puts("======DYARRAY-END=======\n");

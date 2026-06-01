@@ -2,6 +2,7 @@
 
 #include "dyarray_test.h"
 #include "array_test.h"
+#include "arraylist_test.h"
 
 typedef struct client
 {
@@ -18,14 +19,6 @@ typedef struct server
 int main(void)
 {   
     //test_dyarray();
-    //test_array();
-    
-    // server myServer;
-    // myServer.clients = dyarray_create(client);
-
-    // dyarray_push(myServer.clients, ((client){.id=0, .name="Mordecai"}));
-    // dyarray_push(myServer.clients, ((client){.id=0, .name="Mordecai"}));
-
-
+    test_arraylist();
 }
 
