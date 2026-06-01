@@ -8,10 +8,8 @@
 #define _linkedlist_field(list, field) \
     ((u64*)list)[field]
 
-
 #define _linkedlist_addr_of(list, index) \
     (void*)(((u64)list) + sizeof(_linkedlist_header) + (index * _linkedlist_field(list, LINKEDLIST_STRIDE)))
-
 
 #define _linkedlist_node_field(list, index, field) \
     ((u64*)_linkedlist_addr_of(list, index))[field]
@@ -59,31 +57,34 @@ void _linkedlist_free(linkedlist list)
 b8 _linkedlist_push(linkedlist list, const void* node)
 {
     if(!list) return 0;
-    
+
+    return _linkedlist_push_at(list, _linkedlist_field(list, LINKEDLIST_LENGTH), node);
+}
+
+b8 _linkedlist_push_at(linkedlist list, u64 index, const void* node)
+{   
+    if(!list) return 0;
+
+
     if(_linkedlist_field(list, LINKEDLIST_LENGTH) == _linkedlist_field(list, LINKEDLIST_CAPACITY))
     {
         list = _linkedlist_resize(list, LINKEDLIST_DEFAULT_RESIZE_FACTOR * _linkedlist_field(list, LINKEDLIST_CAPACITY));
     }
-    
-    _linkedlist_field(list, LINKEDLIST_LENGTH) += 1;
-    _linkedlist_set(list, _linkedlist_field(list, LINKEDLIST_LENGTH), node);
-    
-    if(_linkedlist_field(list, LINKEDLIST_HEAD_INDEX) == LINKEDLIST_INVALID_INDEX)
-    {
-        
-    }
-    
-    return list;
-}
-
-b8 _linkedlist_push_at(linkedlist list, const void* node, u64 index)
-{   
-    if(!list) return 0;
 
     if(!_linkedlist_is_valid_index(list, index)) return 0;
-
     
-    libce_memcpy(, node, _linkedlist_node_data_size(list));
+    //Add node data to the end of the array
+
+    //Write node header
+    _linkedlist_node_header header = {.next_index=0, .prev_index=0};
+    libce_memcpy(_linkedlist_addr_of(list, _linkedlist_field(list, LINKEDLIST_LENGTH)), 
+        &header, 
+        sizeof(_linkedlist_node_header));
+
+    //Write node body
+    libce_memcpy(_linkedlist_addr_of(list, _linkedlist_field(list, LINKEDLIST_LENGTH)) + sizeof(_linkedlist_node_header), 
+        node, 
+        _linkedlist_node_data_size(list));
 
 
     return 0;
@@ -96,7 +97,7 @@ b8 _linkedlist_pop(linkedlist list)
     return 0;
 }
 
-b8 _linkedlist_pop_at(linkedlist list, u64 index)
+b8 _linkedlist_pop_at(linkedlist list, u64 index, void* dest)
 {
     return 0;
 }
